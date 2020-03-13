@@ -91,7 +91,7 @@ class GitRepo:
         """
         if not message:
             raise AttributeError("\"Message\" parameter must be passed.")
-        self.__exec_cmd(f"git commit -m {message}", self.local)
+        self.__exec_cmd(f"git commit -m \"{message}\"", self.local)
 
     def checkout(self, branch, new=False):
         """
@@ -101,9 +101,11 @@ class GitRepo:
         :param str branch: branch name to checkout
         :param bool new: whether to create a new branch, defaults to False
         """
-        self.__exec_cmd(f"git checkout {'-b' if new else ''} {branch}", self.local)
+        # Some weird string spacing here for the .split required by subprocess.check_output
+        self.__exec_cmd(f"git checkout{' -b' if new else ''} {branch}", self.local)
 
-    def __exec_cmd(self, cmd, workdir):
+    @staticmethod
+    def __exec_cmd(cmd, workdir):
         """
         Execute a command from a location.
 
