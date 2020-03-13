@@ -51,25 +51,25 @@ class GitRepo:
         try:
             self.local
         except MissingLocalException:
-            __exec_cmd(f"git clone {self.remote}", self._dir)
+            self.__exec_cmd(f"git clone {self.remote} {self._local}", self._dir)
 
     def pull(self):
         """
         Perform a git pull on the local repo.
         """
-        __exec_cmd("git pull", self.local)
+        self.__exec_cmd("git pull", self.local)
 
     def push(self):
         """
         Perform a git push on the local repo to the remote repo.
         """
-        __exec_cmd("git push", self.local)  # TODO handle missing branches in remote.
+        self.__exec_cmd("git push", self.local)  # TODO handle missing branches in remote.
 
     def fetch(self):
         """
         Perform a git fetch from the remote repo to the local repo.
         """
-        __exec_cmd("git fetch", self.local)
+        self.__exec_cmd("git fetch", self.local)
 
     def add(self, file_match):
         """
@@ -79,7 +79,7 @@ class GitRepo:
 
         :param str file_match: files to add or command args
         """
-        __exec_cmd(f"git add {file_match or '-u'}", self.local)
+        self.__exec_cmd(f"git add {file_match or '-u'}", self.local)
 
     def commit(self, message):
         """
@@ -91,7 +91,7 @@ class GitRepo:
         """
         if not message:
             raise AttributeError("\"Message\" parameter must be passed.")
-        __exec_cmd(f"git commit -m {message}", self.local)
+        self.__exec_cmd(f"git commit -m {message}", self.local)
 
     def checkout(self, branch, new=False):
         """
@@ -101,17 +101,16 @@ class GitRepo:
         :param str branch: branch name to checkout
         :param bool new: whether to create a new branch, defaults to False
         """
-        __exec_cmd(f"git checkout {'-b' if new else ''} {branch}", self.local)
+        self.__exec_cmd(f"git checkout {'-b' if new else ''} {branch}", self.local)
 
+    def __exec_cmd(self, cmd, workdir):
+        """
+        Execute a command from a location.
 
-def __exec_cmd(cmd, workdir):
-    """
-    Execute a command from a location.
-
-    :param str cmd: command to execute
-    :param str workdir: path to location from which to execute
-    """
-    subprocess.check_output(cmd, cwd=workdir)
+        :param str cmd: command to execute
+        :param str workdir: path to location from which to execute
+        """
+        subprocess.check_output(cmd.split(" "), cwd=workdir)
 
 
 class MissingLocalException(Exception):
