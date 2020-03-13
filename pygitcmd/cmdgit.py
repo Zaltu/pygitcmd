@@ -28,8 +28,9 @@ class GitRepo:
         :rtype: str
         """
         # Check that self._local is a real location containing a .git
-        if not os.path.exists(self._local) or not os.path.isdir(self._local):
-            if not os.path.exists(os.path.join(self._local, ".git")):
+        if not os.path.exists(self._local) or\
+           not os.path.isdir(self._local) or\
+           not os.path.exists(os.path.join(self._local, ".git")):
                 raise MissingLocalException("No local path %s" % self._local)
         return self._local
 
